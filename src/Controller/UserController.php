@@ -31,7 +31,7 @@ class UserController extends AbstractController
 
 
             $user->setRoles(array('ROLE_USER'));
-            $user->setCustomer();
+            $user->setCustomer($user->getCustomer());
             $em->persist($user);
             $em->flush();
             $errors = $validator->validate($user);
