@@ -1,8 +1,11 @@
 <?php
 
-namespace App\Entity;
+namespace App\Controller;
 
 use App\Repository\ProductRepository;
+use App\Entity\Product;
+use App\Entity\Customer;
+use App\Repository\CustomerRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -38,9 +41,10 @@ class ProductController extends AbstractController
     /**
      * @Route("/api/store_product", name="store",methods={"POST"})
      */
-    public function store(Request $request, SerializerInterface $serializer, EntityManagerInterface $em, ValidatorInterface $validator): Response
+    public function store(Request $request, SerializerInterface $serializer,CustomerRepository $repo, EntityManagerInterface $em, ValidatorInterface $validator): Response
     {
         try {
+            
             $getjson = $request->getContent();
 
             $product = $serializer->deserialize($getjson, Product::class, 'json');

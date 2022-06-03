@@ -14,24 +14,31 @@ use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Serializer\Exception\NotEncodableValueException;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
+
 
 class UserController extends AbstractController
 {
     /**
      * @Route("/api/store_user", name="store_user",methods={"POST"})
      */
-    public function storeUser(Request $request, SerializerInterface $serializer, EntityManagerInterface $em, ValidatorInterface $validator):Response
+    public function storeUser(Request $request, SerializerInterface $serializer, EntityManagerInterface $em, UserPasswordHasherInterface $userPasswordEncoder, ValidatorInterface $validator):Response
     {
         
         try {
-            $user = new User();
             $getjson = $request->getContent();
 
             $user = $serializer->deserialize($getjson, User::class, 'json');
 
 
             $user->setRoles(array('ROLE_USER'));
-            $user->setCustomer($user->getCustomer());
+            $user->setCustomer($this->getUser());
+            if ($user->getPlainPassword()) {
+                $user->setPassword(
+                    $userPasswordEncoder->hashPassword($user, $user->getPlainPassword())
+                );
+            }
             $em->persist($user);
             $em->flush();
             $errors = $validator->validate($user);
@@ -64,5 +71,22 @@ class UserController extends AbstractController
 
 
        
+    }
+
+    /**
+     * @Route("/api/listuser", name="RouteName")
+     */
+    public function listUser(UserRepository $userRepository,SerializerInterface $serializer): Response
+    {
+      $user = $userRepository->findAll();
+
+      $usersnormalize = $serializer->serialize($user,'json',['groups'=>'user:read']);
+
+      $json = json_encode($usersnormalize);
+
+      $response = new JsonResponse($json,200,[],true);
+
+
+      return $response;
     }
 }

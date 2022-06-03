@@ -22,57 +22,54 @@ class Customer implements UserInterface, PasswordAuthenticatedUserInterface
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups("customer:read")
      */
     private $id;
 
      /**
      * @ORM\Column(type="string", length=255)
-     * @Groups("user:read")
+     * @Groups("customer:read")
      */
     private $firstname;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups("user:read")
+     * @Groups("customer:read")
      */
     private $lastname;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true,unique=true)
-     * @Groups("user:read")
+     *@Groups("customer:read")
      */
     private $email;
 
     /**
      * @ORM\Column(type="json")
-     * @Groups("user:read")
+     * @Groups("customer:read")
      */
     private $roles = [];
 
     /**
      *  @var string The hashed password
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups("user:read")
+     * @Groups("customer:read")
      */
     private $password;
 
     private $plainPassword;
 
-    /**
-     * @ORM\OneToMany(targetEntity=Product::class, mappedBy="customer")
-     * @Groups("user:read")
-     */
-    private $Product;
+   
 
     /**
      * @ORM\OneToMany(targetEntity=User::class, mappedBy="Customer")
-     * @Groups("user:read")
+     * @Groups("customer:read")
      */
     private $users;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups("user:read")
+     * @Groups("customer:read")
      */
     private $Company;
 
@@ -117,35 +114,6 @@ class Customer implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    /**
-     * @return Collection<int, Product>
-     */
-    public function getProduct(): Collection
-    {
-        return $this->Product;
-    }
-
-    public function addProduct(Product $product): self
-    {
-        if (!$this->Product->contains($product)) {
-            $this->Product[] = $product;
-            $product->setCustomer($this);
-        }
-
-        return $this;
-    }
-
-    public function removeProduct(Product $product): self
-    {
-        if ($this->Product->removeElement($product)) {
-            // set the owning side to null (unless already changed)
-            if ($product->getCustomer() === $this) {
-                $product->setCustomer(null);
-            }
-        }
-
-        return $this;
-    }
 
     /**
      * @return Collection<int, User>

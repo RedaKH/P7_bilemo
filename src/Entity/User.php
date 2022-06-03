@@ -19,11 +19,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups("customer:read")
+     * @Groups("user:read")
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=180, unique=true)
+     * @Groups("customer:read")
      * @Groups("user:read")
      */
     private $email;
@@ -31,12 +34,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @ORM\Column(type="json")
      * @Groups("user:read")
+     * @Groups("customer:read")
+     * 
      */
     private $roles = [];
 
     /**
      * @var string The hashed password
      * @ORM\Column(type="string")
+     * @Groups("customer:read")
      * @Groups("user:read")
      */
     private $password;
@@ -45,19 +51,21 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups("customer:read")
      * @Groups("user:read")
      */
     private $firstname;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups("customer:read")
      * @Groups("user:read")
      */
     private $lastname;
 
     /**
      * @ORM\ManyToOne(targetEntity=Customer::class, inversedBy="users")
-     * @Groups("user:read")
+     * @Groups("customer:read")
      */
     private $Customer;
 

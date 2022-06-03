@@ -42,7 +42,7 @@ class CustomerController extends AbstractController
             }
 
 
-            return $this->json($customer, 201, [], ['groups' => 'user:read']);
+            return $this->json($customer, 201, [], ['groups' => 'customer:read']);
         } catch (NotEncodableValueException $e) {
             return $this->json([
                 'status' => 400,

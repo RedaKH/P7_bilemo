@@ -17,39 +17,35 @@ class Product
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
-     * @Groups({"show_product"})
+     * @Groups("show_product")
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups({"show_product"})
+     * @Groups("show_product")
      */
     private $name;
 
     /**
      * @ORM\Column(type="string", length=555, nullable=true)
-     * @Groups({"show_product"})
+     * @Groups("show_product")
      */
     private $description;
 
     /**
      * @ORM\Column(type="float", nullable=true)
-     *@Groups({"show_product"})
+     *@Groups("show_product")
      */
     private $price;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
-     *@Groups({"show_product"})
+     *@Groups("show_product")
      */
     private $created_at;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=Customer::class, inversedBy="Product")
-     * @Groups({"show_product"})
-     */
-    private $customer;
+
 
  
 
@@ -108,16 +104,6 @@ class Product
         return $this;
     }
 
-    public function getCustomer(): ?Customer
-    {
-        return $this->customer;
-    }
-
-    public function setCustomer(?Customer $customer): self
-    {
-        $this->customer = $customer;
-
-        return $this;
-    }
+ 
 
 }
