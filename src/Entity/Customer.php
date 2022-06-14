@@ -11,49 +11,65 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use JMS\Serializer\Annotation as Serializer;
+use Hateoas\Configuration\Annotation as Hateoas;
+use OpenApi\Annotations as OA;
 
 /**
  * @ApiResource(formats={"json"})
  * @ORM\Entity(repositoryClass=CustomerRepository::class)
+ *  @Hateoas\Relation("self", href = "expr('/api/customer/' ~ object.getId())"
+ * , exclusion = @Hateoas\Exclusion(groups={"customer:read"}))
+ * @Hateoas\Relation("list", href = "expr('/api/customers/",
+ *  exclusion = @Hateoas\Exclusion(groups={"customer:read"}))
+ * 
+ * @OA\Schema
  */
+
 class Customer implements UserInterface, PasswordAuthenticatedUserInterface
 {
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
-     * @Groups("customer:read")
+     * @Serializer\Groups({"customer:read"})
+     * @OA\Property(type="integer")
      */
     private $id;
 
      /**
      * @ORM\Column(type="string", length=255)
-     * @Groups("customer:read")
+     * @Serializer\Groups({"customer:read"})
+     * @OA\Property(type="string",nullable=true)
      */
     private $firstname;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups("customer:read")
+     * @Serializer\Groups({"customer:read"})
+     * @OA\Property(type="string",nullable=true)
      */
     private $lastname;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true,unique=true)
-     *@Groups("customer:read")
+     *@Serializer\Groups({"customer:read"})
+     *@OA\Property(type="string",nullable=true)
      */
     private $email;
 
     /**
      * @ORM\Column(type="json")
-     * @Groups("customer:read")
+     * @Serializer\Groups({"customer:read"})
+     * @OA\Property(type="json",nullable=true)
      */
     private $roles = [];
 
     /**
      *  @var string The hashed password
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups("customer:read")
+     * @Serializer\Groups({"customer:read"})
+     * @OA\Property(type="string",nullable=true)
      */
     private $password;
 
@@ -63,13 +79,14 @@ class Customer implements UserInterface, PasswordAuthenticatedUserInterface
 
     /**
      * @ORM\OneToMany(targetEntity=User::class, mappedBy="Customer")
-     * @Groups("customer:read")
+     * @Serializer\Groups({"customer:read"})
      */
     private $users;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups("customer:read")
+     * @Serializer\Groups({"customer:read"})
+     * @OA\Property(type="string",nullable=true)
      */
     private $Company;
 

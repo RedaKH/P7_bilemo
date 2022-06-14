@@ -16,11 +16,20 @@ use Symfony\Component\Serializer\Exception\NotEncodableValueException;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use OpenApi\Annotations as OA;
+
 
 class ProductController extends AbstractController
 {
     /**
-     * @Route("/api/product", name="api_product_index",methods={"GET"})
+     * @OA\Get(
+     *   tags={"Product"},
+     *   summary="Liste des produits",
+     *   @OA\Response(response=200, description="Tous les produits"),
+     *   @OA\Response(response=401, description="Erreur du token jwt"),
+     *   @OA\Response(response=404, description="Aucun produit trouvé")
+     * )
+     * @Route("/api/products", name="api_product_index",methods={"GET"})
      */
     public function index(ProductRepository $productRepository,SerializerInterface $serializer)
     {
@@ -28,9 +37,8 @@ class ProductController extends AbstractController
 
       $productsnormalize = $serializer->serialize($products,'json',['groups'=>'show_product']);
 
-      $json = json_encode($productsnormalize);
 
-      $response = new JsonResponse($json,200,[],true);
+      $response = new JsonResponse($productsnormalize,200,[],true);
 
 
       return $response;
@@ -39,6 +47,50 @@ class ProductController extends AbstractController
     }
 
     /**
+     * @OA\Post(
+     *     path="/api/store_product",
+     *   summary="Créer un nouveau produit",
+     *   @OA\RequestBody(
+     *     required=true,
+     *     @OA\MediaType(
+     *       mediaType="application/json",
+     *       @OA\Schema(
+     *         type="object",
+     *         @OA\Property(
+     *           property="name",
+     *           description="Nom du produit",
+     *           type="string",
+     *           default="Samsung Galaxy S10"
+     *         ),
+     *         @OA\Property(
+     *           property="description",
+     *           description="description du produit",
+     *           type="string",
+     *           default=" Ecran : large 5,8"
+     *         ),
+     *         @OA\Property(
+     *           property="price",
+     *           description="Prix du produit",
+     *           type="float",
+     *           default="499.99"
+     *         ),
+     *       )
+     *     )
+     *   ),
+     *   @OA\Response(
+     *     response=201,
+     *     description="Created product",
+     *     @OA\JsonContent(
+     *       type="array",
+     *          @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Product"))
+     *     )
+     *   ),
+     *   @OA\Response(response=400, description="Le champ du json est invalide ou erreur de syntaxe"),
+     *   @OA\Response(
+     *     response=401,
+     *     description="Erreur de token json"
+     *   ),
+     * )
      * @Route("/api/store_product", name="store",methods={"POST"})
      */
     public function store(Request $request, SerializerInterface $serializer,CustomerRepository $repo, EntityManagerInterface $em, ValidatorInterface $validator): Response
@@ -70,7 +122,19 @@ class ProductController extends AbstractController
     }
 
     /**
-     * @Route("api/product/{id}", name="api_find_product", methods={"GET"})
+     *  
+     * @OA\Get(
+     *     path="/product/{id}",
+     *   summary="Recuperer un produit par ID",
+     *   @OA\PathParameter(
+     *     name="id",
+     *     description="l'id du produit que vous voulez recuperer"
+     *   ),
+     *   @OA\Response(response=200, description="Detail du produit"),
+     *   @OA\Response(response=404, description="Aucun produit trouvé avec cet ID")
+     * )
+     *
+     * @Route("/product/{id}", name="api_find_product", methods={"GET"})
      */
     public function api_find_product(ProductRepository $productRepository,$id, SerializerInterface $serializer)
     {
