@@ -18,6 +18,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Serializer\Exception\NotEncodableValueException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use OpenApi\Annotations as OA;
 
 
@@ -124,7 +125,9 @@ class UserController extends AbstractController
      *     description="ID de l'utilisateur qui va être supprimé"
      *   )
      * )
+     * @IsGranted("manage", subject="user", statusCode=403, message="Accès interdit")
      * @Route("/api/delete_user/{id}", name="delete_user",methods={"DELETE"})
+     * 
      */
     public function deleteUser(EntityManagerInterface $em,User $user)
     {
@@ -145,7 +148,9 @@ class UserController extends AbstractController
      *   @OA\Response(response=401, description="Erreur du token jwt"),
      *   @OA\Response(response=404, description="Aucun utilisateur trouvé")
      * )
+     * @IsGranted("manage", subject="user", statusCode=403, message="Vous ne pouvez pas consulter cette liste")
      * @Route("/api/users", name="Users",methods={"GET"} )
+     * 
      */
     public function listUser(UserRepository $userRepository): Response
     {
@@ -169,7 +174,9 @@ class UserController extends AbstractController
      *   @OA\Response(response=401, description="Erreur du token JWT"),
      *   @OA\Response(response=404, description="Aucun utilisateur trouvé avec cet ID")
      * )
+     * @IsGranted("manage", subject="user", statusCode=403, message="Vous ne pouvez pas consulter cet utilisateur")
      * @Route("api/user/{id}", name="User",methods={"GET"})
+     * 
      */
     public function findUser(UserRepository $userRepository,$id,SerializerInterface $serializer)
     {

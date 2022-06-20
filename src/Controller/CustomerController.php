@@ -20,6 +20,8 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Serializer\Exception\NotEncodableValueException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+
 use OpenApi\Annotations as OA;
 
 
@@ -42,7 +44,9 @@ class CustomerController extends AbstractController
      *     description="ID du client qui va être supprimé"
      *   )
      * )
+     * @IsGranted("manage", subject="customer", statusCode=403, message="Accès interdit")
      * @Route("/delete_customer/{id}", name="delete_customer",methods={"DELETE"})
+     *
      */
     public function deleteCustomer(EntityManagerInterface $em, Customer $customer)
     {
@@ -68,7 +72,7 @@ class CustomerController extends AbstractController
      *   @OA\Response(response=404, description="Aucun client trouvé avec cet ID")
      * )
      * 
-     * 
+     * @IsGranted("manage", subject="customer", statusCode=403, message="Vous ne pouvez pas consulter ce client")
      * @Route("/api/customer/{id}", name="Customer",methods={"GET"})
      * 
      * 
@@ -93,7 +97,7 @@ class CustomerController extends AbstractController
      *   @OA\Response(response=404, description="Aucun client trouvé")
      * )
      * 
-     * 
+     * @IsGranted("manage", subject="customer", statusCode=403, message="Vous ne pouvez pas consulter ce client")
      * @Route("/api/customers", name="Customers",methods={"GET"} )
      */
     public function listCustomers(CustomerRepository $customerRepository): Response
