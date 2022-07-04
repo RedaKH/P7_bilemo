@@ -75,7 +75,7 @@ class UserController extends AbstractController
      *     description="JWT erreur de token"
      *   ),
      * )
-     * @Route("/api/store_user", name="store_user",methods={"POST"})
+     * @Route("/api/user", name="store_user",methods={"POST"})
      */
     public function storeUser(Request $request, SerializerInterface $serializer, EntityManagerInterface $em, UserPasswordHasherInterface $userPasswordEncoder, ValidatorInterface $validator):Response
     {
@@ -125,8 +125,8 @@ class UserController extends AbstractController
      *     description="ID de l'utilisateur qui va être supprimé"
      *   )
      * )
-     * @IsGranted("manage", subject="user", statusCode=403, message="Accès interdit")
-     * @Route("/api/delete_user/{id}", name="delete_user",methods={"DELETE"})
+     * @IsGranted("ROLE_USER")
+     * @Route("/api/users/{id}/delete", name="delete_user",methods={"DELETE"})
      * 
      */
     public function deleteUser(EntityManagerInterface $em,User $user)
@@ -148,7 +148,7 @@ class UserController extends AbstractController
      *   @OA\Response(response=401, description="Erreur du token jwt"),
      *   @OA\Response(response=404, description="Aucun utilisateur trouvé")
      * )
-     * @IsGranted("manage", subject="user", statusCode=403, message="Vous ne pouvez pas consulter cette liste")
+     * @IsGranted("ROLE_USER")
      * @Route("/api/users", name="Users",methods={"GET"} )
      * 
      */
@@ -174,7 +174,7 @@ class UserController extends AbstractController
      *   @OA\Response(response=401, description="Erreur du token JWT"),
      *   @OA\Response(response=404, description="Aucun utilisateur trouvé avec cet ID")
      * )
-     * @IsGranted("manage", subject="user", statusCode=403, message="Vous ne pouvez pas consulter cet utilisateur")
+     * @IsGranted("ROLE_USER")
      * @Route("api/user/{id}", name="User",methods={"GET"})
      * 
      */
