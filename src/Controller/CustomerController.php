@@ -20,6 +20,9 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Serializer\Exception\NotEncodableValueException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use App\Security\Voter\CustomerVoter;
+
 use OpenApi\Annotations as OA;
 
 
@@ -42,10 +45,13 @@ class CustomerController extends AbstractController
      *     description="ID du client qui va être supprimé"
      *   )
      * )
-     * @Route("/delete_customer/{id}", name="delete_customer",methods={"DELETE"})
+     * @IsGranted("ROLE_USER")
+     * @Route("/api/customers/{id}/delete", name="delete_customer",methods={"DELETE"})
+     *
      */
-    public function deleteCustomer(EntityManagerInterface $em, Customer $customer)
+    public function deleteCustomer(EntityManagerInterface $em)
     {
+        $customer = new Customer();
         $em->remove($customer);
         $em->flush();
 
@@ -68,7 +74,7 @@ class CustomerController extends AbstractController
      *   @OA\Response(response=404, description="Aucun client trouvé avec cet ID")
      * )
      * 
-     * 
+     * @IsGranted("ROLE_USER")
      * @Route("/api/customer/{id}", name="Customer",methods={"GET"})
      * 
      * 
@@ -93,7 +99,7 @@ class CustomerController extends AbstractController
      *   @OA\Response(response=404, description="Aucun client trouvé")
      * )
      * 
-     * 
+     * @IsGranted("ROLE_USER")
      * @Route("/api/customers", name="Customers",methods={"GET"} )
      */
     public function listCustomers(CustomerRepository $customerRepository): Response
@@ -157,7 +163,7 @@ class CustomerController extends AbstractController
      *     description="JWT erreur de token"
      *   ),
      * )
-     * @Route("/store_customer", name="store_customer",methods={"POST"})
+     * @Route("/customers", name="store_customer",methods={"POST"})
      */
     public function storeCustomer(Request $request, SerializerInterface $serializer, EntityManagerInterface $em, UserPasswordHasherInterface $customerPasswordEncoder, ValidatorInterface $validator):Response
     {

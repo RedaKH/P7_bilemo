@@ -1,7 +1,7 @@
 {
     "openapi": "3.0.0",
     "paths": {
-        "/delete_customer/{id}": {
+        "/customer/{id}/delete": {
             "delete": {
                 "summary": "Supprimer un client par ID",
                 "operationId": "9d66f6fa2737a04f94b07584ba92a2a6",
@@ -68,7 +68,7 @@
                 }
             }
         },
-        "/store_customer": {
+        "/customers": {
             "post": {
                 "summary": "Créer un nouveau client",
                 "operationId": "ed96f940b10c9a7e7f48297828074770",
@@ -123,58 +123,6 @@
                 }
             }
         },
-        "/api/store_product": {
-            "post": {
-                "summary": "Créer un nouveau produit",
-                "operationId": "49346b5a4d75d1b0c26645d777b927c1",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "properties": {
-                                    "name": {
-                                        "description": "Nom du produit",
-                                        "type": "string",
-                                        "default": "Samsung Galaxy S10"
-                                    },
-                                    "description": {
-                                        "description": "description du produit",
-                                        "type": "string",
-                                        "default": " Ecran : large 5,8"
-                                    },
-                                    "price": {
-                                        "description": "Prix du produit",
-                                        "type": "number",
-                                        "format": "float",
-                                        "default": "499.99"
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "201": {
-                        "description": "Created product",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "array"
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Le champ du json est invalide ou erreur de syntaxe"
-                    },
-                    "401": {
-                        "description": "Erreur de token json"
-                    }
-                }
-            }
-        },
         "/product/{id}": {
             "get": {
                 "summary": "Recuperer un produit par ID",
@@ -197,7 +145,7 @@
                 }
             }
         },
-        "/api/store_user": {
+        "/api/user": {
             "post": {
                 "summary": "Créer un nouvel utilisateur",
                 "operationId": "c9751440222938d77d29e326973fadf3",

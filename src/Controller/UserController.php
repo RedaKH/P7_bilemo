@@ -18,6 +18,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Serializer\Exception\NotEncodableValueException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use OpenApi\Annotations as OA;
 
 
@@ -74,7 +75,7 @@ class UserController extends AbstractController
      *     description="JWT erreur de token"
      *   ),
      * )
-     * @Route("/api/store_user", name="store_user",methods={"POST"})
+     * @Route("/api/user", name="store_user",methods={"POST"})
      */
     public function storeUser(Request $request, SerializerInterface $serializer, EntityManagerInterface $em, UserPasswordHasherInterface $userPasswordEncoder, ValidatorInterface $validator):Response
     {
@@ -124,7 +125,9 @@ class UserController extends AbstractController
      *     description="ID de l'utilisateur qui va être supprimé"
      *   )
      * )
-     * @Route("/api/delete_user/{id}", name="delete_user",methods={"DELETE"})
+     * @IsGranted("ROLE_USER")
+     * @Route("/api/users/{id}/delete", name="delete_user",methods={"DELETE"})
+     * 
      */
     public function deleteUser(EntityManagerInterface $em,User $user)
     {
@@ -145,7 +148,9 @@ class UserController extends AbstractController
      *   @OA\Response(response=401, description="Erreur du token jwt"),
      *   @OA\Response(response=404, description="Aucun utilisateur trouvé")
      * )
+     * @IsGranted("ROLE_USER")
      * @Route("/api/users", name="Users",methods={"GET"} )
+     * 
      */
     public function listUser(UserRepository $userRepository): Response
     {
@@ -169,7 +174,9 @@ class UserController extends AbstractController
      *   @OA\Response(response=401, description="Erreur du token JWT"),
      *   @OA\Response(response=404, description="Aucun utilisateur trouvé avec cet ID")
      * )
+     * @IsGranted("ROLE_USER")
      * @Route("api/user/{id}", name="User",methods={"GET"})
+     * 
      */
     public function findUser(UserRepository $userRepository,$id,SerializerInterface $serializer)
     {
