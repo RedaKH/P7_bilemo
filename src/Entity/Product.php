@@ -6,14 +6,19 @@ use App\Repository\ProductRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Serializer\Annotation\Groups;
-use Hateoas\Configuration\Annotation as Hateoas;
 use Doctrine\ORM\Mapping as ORM;
 use OpenApi\Annotations as OA;
+use JMS\Serializer\Annotation as Serializer;
+use Hateoas\Configuration\Annotation as Hateoas;
 
 
 /**
  * @ORM\Entity(repositoryClass=ProductRepository::class)
  * @OA\Schema
+ * @Hateoas\Relation("self", href = "expr('/product/' ~ object.getId())"
+ * , exclusion = @Hateoas\Exclusion(groups={"customer:read"}))
+ * @Hateoas\Relation("list", href = "expr('/products/",
+ *  exclusion = @Hateoas\Exclusion(groups={"customer:read"}))
  */
 
 
@@ -23,35 +28,35 @@ class Product
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
-     * @Groups("show_product")
+     * @Serializer\Groups({"customer:read"})
      * @OA\Property(type="integer")
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups("show_product")
+     * @Serializer\Groups({"product:read"})
      * @OA\Property(type="string",nullable=true)
      */
     private $name;
 
     /**
      * @ORM\Column(type="string", length=555, nullable=true)
-     * @Groups("show_product")
+     * @Serializer\Groups({"product:read"})
      * @OA\Property(type="string",nullable=true)
      */
     private $description;
 
     /**
      * @ORM\Column(type="float", nullable=true)
-     *@Groups("show_product")
+     *@Serializer\Groups({"product:read"})
      *@OA\Property(type="float",nullable=true)
      */
     private $price;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
-     *@Groups("show_product")
+     *@Serializer\Groups({"product:read"})
      *@OA\Property(type="datetime",nullable=true)
      */
     private $created_at;

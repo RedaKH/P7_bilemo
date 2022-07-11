@@ -1,31 +1,6 @@
 {
     "openapi": "3.0.0",
     "paths": {
-        "/customer/{id}/delete": {
-            "delete": {
-                "summary": "Supprimer un client par ID",
-                "operationId": "9d66f6fa2737a04f94b07584ba92a2a6",
-                "parameters": [
-                    {
-                        "in": "path",
-                        "required": true,
-                        "name": "id",
-                        "description": "ID du client qui va être supprimé"
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "ok"
-                    },
-                    "401": {
-                        "description": "Erreur du token jwt "
-                    },
-                    "404": {
-                        "description": "Aucun client avec cet id"
-                    }
-                }
-            }
-        },
         "/api/customer/{id}": {
             "get": {
                 "summary": "Recuperer un client par ID",
@@ -40,10 +15,20 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Detail du client"
+                        "description": "Details for one user",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Customer"
+                                }
+                            }
+                        }
                     },
                     "401": {
                         "description": "Erreur du token JWT"
+                    },
+                    "403": {
+                        "description": "Vous n'êtes pas autorisé à accèder à cette ressource."
                     },
                     "404": {
                         "description": "Aucun client trouvé avec cet ID"
@@ -51,10 +36,10 @@
                 }
             }
         },
-        "/api/customers": {
+        "/customers": {
             "get": {
                 "summary": "Liste des clients",
-                "operationId": "a1b670eddcc7dd1b403f23bb9f45aceb",
+                "operationId": "e09ba64d18e3e6fc0165146b0d314f71",
                 "responses": {
                     "200": {
                         "description": "tous les clients"
@@ -66,12 +51,10 @@
                         "description": "Aucun client trouvé"
                     }
                 }
-            }
-        },
-        "/customers": {
+            },
             "post": {
                 "summary": "Créer un nouveau client",
-                "operationId": "ed96f940b10c9a7e7f48297828074770",
+                "operationId": "6ca7d79be1dd9c4dede4048189f07c79",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -119,6 +102,23 @@
                     },
                     "401": {
                         "description": "JWT erreur de token"
+                    },
+                    "403": {
+                        "description": "Accès interdit"
+                    }
+                }
+            }
+        },
+        "/products": {
+            "get": {
+                "summary": "Liste des produit",
+                "operationId": "7772d24adc6e3d5072094809e6d5c8ea",
+                "responses": {
+                    "200": {
+                        "description": "tous les produits"
+                    },
+                    "404": {
+                        "description": "not found"
                     }
                 }
             }
@@ -140,7 +140,7 @@
                         "description": "Detail du produit"
                     },
                     "404": {
-                        "description": "Aucun produit trouvé avec cet ID"
+                        "description": "Aucun produit trouvé"
                     }
                 }
             }
@@ -148,7 +148,7 @@
         "/api/user": {
             "post": {
                 "summary": "Créer un nouvel utilisateur",
-                "operationId": "c9751440222938d77d29e326973fadf3",
+                "operationId": "2a44cde1b8a9d083e0f4e5c08eb9b346",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -196,14 +196,17 @@
                     },
                     "401": {
                         "description": "JWT erreur de token"
+                    },
+                    "403": {
+                        "description": "Accès interdit"
                     }
                 }
             }
         },
-        "/api/delete_user/{id}": {
+        "/api/user/{id}/delete": {
             "delete": {
                 "summary": "Supprimer un utilisateur par ID",
-                "operationId": "b5256dba76baead8a9d4cee87f0faa6d",
+                "operationId": "8a2d4e06898d347008a786bfa4da724e",
                 "parameters": [
                     {
                         "in": "path",
@@ -219,16 +222,19 @@
                     "401": {
                         "description": "Erreur du token jwt"
                     },
+                    "403": {
+                        "description": "Vous n'êtes pas autorisé à accèder à cette ressource."
+                    },
                     "404": {
-                        "description": "Aucun utilisateur avec cet id"
+                        "description": "Cet utilisateur n'existe pas"
                     }
                 }
             }
         },
-        "/api/users": {
+        "/users": {
             "get": {
                 "summary": "Liste des utilisateurs",
-                "operationId": "8ce01a966ee74e99d6da657dd3dbc7b0",
+                "operationId": "3b6e6e651728114a54281f3f5241c939",
                 "responses": {
                     "200": {
                         "description": "tous les utilisateurs"
@@ -258,11 +264,14 @@
                     "200": {
                         "description": "Détail de l'utilisateur"
                     },
+                    "403": {
+                        "description": "Vous n'êtes pas autorisé à accèder à cette ressource."
+                    },
                     "401": {
                         "description": "Erreur du token JWT"
                     },
                     "404": {
-                        "description": "Aucun utilisateur trouvé avec cet ID"
+                        "description": "Cet utilisateur n'existe pas"
                     }
                 }
             }

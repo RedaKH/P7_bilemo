@@ -30,35 +30,6 @@ use OpenApi\Annotations as OA;
 class CustomerController extends AbstractController
 {
 
-
-
-
-    /**
-     *  @OA\Delete(
-     *   path="/delete_customer/{id}",
-     *   summary="Supprimer un client par ID",
-     *   @OA\Response(response=204, description="ok"),
-     *   @OA\Response(response=401, description="Erreur du token jwt "),
-     *   @OA\Response(response=404, description="Aucun client avec cet id"),
-     *   @OA\PathParameter(
-     *     name="id",
-     *     description="ID du client qui va être supprimé"
-     *   )
-     * )
-     * @IsGranted("ROLE_USER")
-     * @Route("/api/customers/{id}/delete", name="delete_customer",methods={"DELETE"})
-     *
-     */
-    public function deleteCustomer(EntityManagerInterface $em)
-    {
-        $customer = new Customer();
-        $em->remove($customer);
-        $em->flush();
-
-        return new Response('ok');
-    }
-
-
     /**
      * 
      *   
@@ -69,12 +40,19 @@ class CustomerController extends AbstractController
      *     name="id",
      *     description="l'id du client que vous voulez recuperer"
      *   ),
+     *    @OA\Response(
+     *       response="200",
+     *         description="Details for one user",
+     *         @OA\JsonContent(ref="#/components/schemas/Customer"),
+     *     ),
      *   @OA\Response(response=200, description="Detail du client"),
      *   @OA\Response(response=401, description="Erreur du token JWT"),
+     *   @OA\Response(response=403, description="Vous n'êtes pas autorisé à accèder à cette ressource."),
      *   @OA\Response(response=404, description="Aucun client trouvé avec cet ID")
      * )
      * 
-     * @IsGranted("ROLE_USER")
+     * 
+     * 
      * @Route("/api/customer/{id}", name="Customer",methods={"GET"})
      * 
      * 
@@ -82,25 +60,52 @@ class CustomerController extends AbstractController
      */
     public function findCustomer(CustomerRepository $customerRepository, $id)
     {
+    
         $hateoas = HateoasBuilder::create()->build();
 
         $customer = $customerRepository->find($id);
+ 
 
-        $json = $hateoas->serialize($customer, 'json', SerializationContext::create()->setGroups(array('customer:read')));
-        return new JsonResponse($json, 200, [], true);
+        if ($customer === null) {
+            return $this->json([
+                'status' => 404,
+                'message' => "Cet utilisateur n'existe pas"
+            ], 404);
+        }
+         if ($customer->getUsers() !== $this->getUser()) {
+            return $this->json([
+                'status' => 403,
+                'message' => "Vous n'êtes pas autorisé à accèder à cette ressource."
+            ], 403);
+        }
+
+        try {
+            $json = $hateoas->serialize($customer, 'json', SerializationContext::create()->setGroups(array('customer:read')));
+            return new JsonResponse($json, 200, [], true);
+        } catch (NotEncodableValueException $e) {
+            return $this->json([
+                'status' => $e->getCode(),
+                'message' => $e->getMessage()
+            ], 400);
+        }
+        
+
+
+       
     }
 
     /**
      * @OA\Get(
-     *    path="/api/customers",
+     *    path="/customers",
      *   summary="Liste des clients",
      *   @OA\Response(response=200, description="tous les clients"),
      *   @OA\Response(response=401, description="Erreur du token jwt"),
-     *   @OA\Response(response=404, description="Aucun client trouvé")
+     *   @OA\Response(response=404, description="Aucun client trouvé"),
+     * 
      * )
      * 
-     * @IsGranted("ROLE_USER")
-     * @Route("/api/customers", name="Customers",methods={"GET"} )
+     * 
+     * @Route("/customers", name="Customers",methods={"GET"} )
      */
     public function listCustomers(CustomerRepository $customerRepository): Response
     {
@@ -115,7 +120,7 @@ class CustomerController extends AbstractController
 
 /**
      * @OA\Post(
-     *     path="/store_customer",
+     *     path="/customers",
      *   summary="Créer un nouveau client",
      *   @OA\RequestBody(
      *     required=true,
@@ -162,6 +167,10 @@ class CustomerController extends AbstractController
      *     response=401,
      *     description="JWT erreur de token"
      *   ),
+     *  @OA\Response(
+     *     response=403,
+     *     description="Accès interdit"
+     *   )
      * )
      * @Route("/customers", name="store_customer",methods={"POST"})
      */

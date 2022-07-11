@@ -80,6 +80,7 @@ class Customer implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @ORM\OneToMany(targetEntity=User::class, mappedBy="Customer")
      * @Serializer\Groups({"customer:read"})
+     * @ORM\JoinColumn(onDelete="CASCADE")
      */
     private $users;
 

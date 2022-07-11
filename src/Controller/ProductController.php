@@ -2,46 +2,45 @@
 
 namespace App\Controller;
 
-use App\Repository\ProductRepository;
 use App\Entity\Product;
 use App\Entity\Customer;
+use Hateoas\HateoasBuilder;
+use OpenApi\Annotations as OA;
+use App\Repository\ProductRepository;
 use App\Repository\CustomerRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
+use JMS\Serializer\SerializationContext;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Serializer\Exception\NotEncodableValueException;
-use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
-use OpenApi\Annotations as OA;
+use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Serializer\Exception\NotEncodableValueException;
 
 
 class ProductController extends AbstractController
 {
     /**
      * @OA\Get(
-     *   tags={"Product"},
-     *   summary="Liste des produits",
-     *   @OA\Response(response=200, description="Tous les produits"),
-     *   @OA\Response(response=401, description="Erreur du token jwt"),
-     *   @OA\Response(response=404, description="Aucun produit trouvé")
+     *    path="/products",
+     *   summary="Liste des produit",
+     *   @OA\Response(response=200, description="tous les produits"),
+     *   @OA\Response(response=404, description="not found"),
+     *  
      * )
-     * @Route("/api/products", name="api_product_index",methods={"GET"})
+     * 
+     * @Route("/products", name="api_product_index",methods={"GET"})
      */
     public function index(ProductRepository $productRepository,SerializerInterface $serializer)
     {
+      $hateoas = HateoasBuilder::create()->build();
       $products = $productRepository->findAll();
 
-      $productsnormalize = $serializer->serialize($products,'json',['groups'=>'show_product']);
-
-
-      $response = new JsonResponse($productsnormalize,200,[],true);
-
-
-      return $response;
+      $json = $hateoas->serialize($products, 'json', SerializationContext::create()->setGroups(array('product:read')));
+        return new JsonResponse($json, 200, [], true);
 
 
     }
@@ -58,22 +57,33 @@ class ProductController extends AbstractController
      *     description="l'id du produit que vous voulez recuperer"
      *   ),
      *   @OA\Response(response=200, description="Detail du produit"),
-     *   @OA\Response(response=404, description="Aucun produit trouvé avec cet ID")
+     *   @OA\Response(response=404, description="Aucun produit trouvé")
      * )
      *
      * @Route("/product/{id}", name="api_find_product", methods={"GET"})
      */
     public function api_find_product(ProductRepository $productRepository,$id, SerializerInterface $serializer)
     {
-       $product = $productRepository->find($id);
-       $productsnormalize = $serializer->serialize($product,'json',['groups'=>'products:read']);
+      try{
+        $hateoas = HateoasBuilder::create()->build();
 
-        $json = json_encode($productsnormalize);
-  
-        $response = new JsonResponse($json,200,[],true);
-  
-  
-        return $response;
+        $product = $productRepository->find($id);
+        if ($product === null) {
+         return $this->json([
+             'status' => 404,
+             'message' => "Aucun produit trouvé"
+         ], 404);
+     }
+        $json = $hateoas->serialize($product, 'json', SerializationContext::create()->setGroups(array('product:read')));
+        return new JsonResponse($json,Response::HTTP_OK, [], true);
+
+      }catch (NotEncodableValueException $e) {
+            return $this->json([
+                'status' => $e->getCode(),
+                'message' => $e->getMessage()
+            ], 400);
+        }
+     
   
 
 

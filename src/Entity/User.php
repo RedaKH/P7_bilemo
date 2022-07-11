@@ -16,9 +16,9 @@ use OpenApi\Annotations as OA;
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
  * @ORM\Table(name="`user`")
- * @Hateoas\Relation("self", href = "expr('/api/user/' ~ object.getId())"
+ * @Hateoas\Relation("self", href = "expr('/user/' ~ object.getId())"
  * , exclusion = @Hateoas\Exclusion(groups={"customer:read"}))
- * @Hateoas\Relation("list", href = "expr('/api/users/",
+ * @Hateoas\Relation("list", href = "expr('/users/",
  *  exclusion = @Hateoas\Exclusion(groups={"customer:read"}))
  * 
  * @OA\Schema
@@ -77,6 +77,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @ORM\ManyToOne(targetEntity=Customer::class, inversedBy="users")
      * @Serializer\Groups({"customer:read"})
+     * @ORM\JoinColumn(onDelete="CASCADE")
      */
     private $Customer;
 
