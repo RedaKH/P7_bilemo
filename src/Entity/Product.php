@@ -16,9 +16,9 @@ use Hateoas\Configuration\Annotation as Hateoas;
  * @ORM\Entity(repositoryClass=ProductRepository::class)
  * @OA\Schema
  * @Hateoas\Relation("self", href = "expr('/product/' ~ object.getId())"
- * , exclusion = @Hateoas\Exclusion(groups={"customer:read"}))
+ * , exclusion = @Hateoas\Exclusion(groups={"product:read"}))
  * @Hateoas\Relation("list", href = "expr('/products/",
- *  exclusion = @Hateoas\Exclusion(groups={"customer:read"}))
+ *  exclusion = @Hateoas\Exclusion(groups={"product:read"}))
  */
 
 

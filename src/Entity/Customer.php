@@ -77,12 +77,7 @@ class Customer implements UserInterface, PasswordAuthenticatedUserInterface
 
    
 
-    /**
-     * @ORM\OneToMany(targetEntity=User::class, mappedBy="Customer")
-     * @Serializer\Groups({"customer:read"})
-     * @ORM\JoinColumn(onDelete="CASCADE")
-     */
-    private $users;
+ 
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
@@ -91,10 +86,22 @@ class Customer implements UserInterface, PasswordAuthenticatedUserInterface
      */
     private $Company;
 
+    /**
+     * @ORM\OneToMany(targetEntity=User::class, mappedBy="customer")
+     * @Serializer\Groups({"customer:read"})
+     */
+    private $User;
+
+   
+
+
+   
+
+
     public function __construct()
     {
         $this->Product = new ArrayCollection();
-        $this->users = new ArrayCollection();
+        $this->User = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -133,35 +140,9 @@ class Customer implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
 
-    /**
-     * @return Collection<int, User>
-     */
-    public function getUsers(): Collection
-    {
-        return $this->users;
-    }
 
-    public function addUser(User $user): self
-    {
-        if (!$this->users->contains($user)) {
-            $this->users[] = $user;
-            $user->setCustomer($this);
-        }
 
-        return $this;
-    }
-
-    public function removeUser(User $user): self
-    {
-        if ($this->users->removeElement($user)) {
-            // set the owning side to null (unless already changed)
-            if ($user->getCustomer() === $this) {
-                $user->setCustomer(null);
-            }
-        }
-
-        return $this;
-    }
+ 
 
     public function getCompany(): ?string
     {
@@ -277,4 +258,44 @@ class Customer implements UserInterface, PasswordAuthenticatedUserInterface
 
         return $this;
     }
+
+    /**
+     * @return Collection<int, User>
+     */
+    public function getUser(): Collection
+    {
+        return $this->User;
+    }
+
+    public function addUser(User $user): self
+    {
+        if (!$this->User->contains($user)) {
+            $this->User[] = $user;
+            $user->setCustomer($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUser(User $user): self
+    {
+        if ($this->User->removeElement($user)) {
+            // set the owning side to null (unless already changed)
+            if ($user->getCustomer() === $this) {
+                $user->setCustomer(null);
+            }
+        }
+
+        return $this;
+    }
+
+
+
+
+
+
+  
+   
+
+    
 }

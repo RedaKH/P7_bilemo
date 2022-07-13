@@ -13,6 +13,7 @@
         "doctrine/doctrine-migrations-bundle": "^3.2",
         "doctrine/orm": "^2.12",
         "friendsofsymfony/rest-bundle": "^3.3",
+        "fzaninotto/faker": "^1.9",
         "lexik/jwt-authentication-bundle": "^2.15",
         "nelmio/cors-bundle": "^2.2",
         "phpdocumentor/reflection-docblock": "^5.3",
@@ -46,6 +47,7 @@
         "symfony/yaml": "5.4.*",
         "twig/extra-bundle": "^2.12|^3.0",
         "twig/twig": "^2.12|^3.0",
+        "willdurand/hateoas": "^3.8",
         "willdurand/hateoas-bundle": "^2.4",
         "zircote/swagger-php": "^4.4"
     },

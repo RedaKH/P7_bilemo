@@ -33,13 +33,18 @@
                     "404": {
                         "description": "Aucun client trouvé avec cet ID"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "scalar": "bearer"
+                    }
+                ]
             }
         },
-        "/customers": {
+        "/api/customers": {
             "get": {
                 "summary": "Liste des clients",
-                "operationId": "e09ba64d18e3e6fc0165146b0d314f71",
+                "operationId": "a1b670eddcc7dd1b403f23bb9f45aceb",
                 "responses": {
                     "200": {
                         "description": "tous les clients"
@@ -50,8 +55,15 @@
                     "404": {
                         "description": "Aucun client trouvé"
                     }
-                }
-            },
+                },
+                "security": [
+                    {
+                        "scalar": "bearer"
+                    }
+                ]
+            }
+        },
+        "/customers": {
             "post": {
                 "summary": "Créer un nouveau client",
                 "operationId": "6ca7d79be1dd9c4dede4048189f07c79",
@@ -196,17 +208,19 @@
                     },
                     "401": {
                         "description": "JWT erreur de token"
-                    },
-                    "403": {
-                        "description": "Accès interdit"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "scalar": "bearer"
+                    }
+                ]
             }
         },
         "/api/user/{id}/delete": {
             "delete": {
                 "summary": "Supprimer un utilisateur par ID",
-                "operationId": "8a2d4e06898d347008a786bfa4da724e",
+                "operationId": "e86371d66afcfae63216ddc1ec7eaab5",
                 "parameters": [
                     {
                         "in": "path",
@@ -217,7 +231,7 @@
                 ],
                 "responses": {
                     "204": {
-                        "description": "ok"
+                        "description": "utilisateur supprimé"
                     },
                     "401": {
                         "description": "Erreur du token jwt"
@@ -228,7 +242,12 @@
                     "404": {
                         "description": "Cet utilisateur n'existe pas"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "scalar": "bearer"
+                    }
+                ]
             }
         },
         "/users": {
@@ -245,7 +264,12 @@
                     "404": {
                         "description": "Aucun utilisateur trouvé"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "scalar": "bearer"
+                    }
+                ]
             }
         },
         "/api/user/{id}": {
@@ -273,7 +297,12 @@
                     "404": {
                         "description": "Cet utilisateur n'existe pas"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "scalar": "bearer"
+                    }
+                ]
             }
         }
     },
@@ -367,6 +396,12 @@
                     }
                 },
                 "type": "object"
+            }
+        },
+        "securitySchemes": {
+            "bearer": {
+                "type": "apiKey",
+                "bearerFormat": "JWT"
             }
         }
     }

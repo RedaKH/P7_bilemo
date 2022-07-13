@@ -3,10 +3,11 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Component\Serializer\Annotation\Groups;
 use JMS\Serializer\Annotation as Serializer;
 use Hateoas\Configuration\Annotation as Hateoas;
 use OpenApi\Annotations as OA;
@@ -16,9 +17,9 @@ use OpenApi\Annotations as OA;
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
  * @ORM\Table(name="`user`")
- * @Hateoas\Relation("self", href = "expr('/user/' ~ object.getId())"
- * , exclusion = @Hateoas\Exclusion(groups={"customer:read"}))
- * @Hateoas\Relation("list", href = "expr('/users/",
+ * @Hateoas\Relation("self", href = "expr('/api/user/' ~ object.getId())"
+ * , exclusion = @Hateoas\Exclusion(groups={"customer:read","user:read"}))
+ * @Hateoas\Relation("list", href = "expr('/api/users/",
  *  exclusion = @Hateoas\Exclusion(groups={"customer:read"}))
  * 
  * @OA\Schema
@@ -74,12 +75,22 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     private $lastname;
 
+  
+
     /**
-     * @ORM\ManyToOne(targetEntity=Customer::class, inversedBy="users")
-     * @Serializer\Groups({"customer:read"})
-     * @ORM\JoinColumn(onDelete="CASCADE")
+     * @ORM\ManyToOne(targetEntity=Customer::class, inversedBy="User")
+     * @ORM\JoinColumn(nullable=false)
+     * 
      */
-    private $Customer;
+    private $customer;
+
+   
+
+
+
+
+
+ 
 
     public function getId(): ?int
     {
@@ -194,17 +205,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getCustomer(): ?Customer
-    {
-        return $this->Customer;
-    }
-
-    public function setCustomer(?Customer $Customer): self
-    {
-        $this->Customer = $Customer;
-
-        return $this;
-    }
+    
 
     /**
      * Get the value of plainPassword
@@ -225,4 +226,25 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
         return $this;
     }
+
+    public function getCustomer(): ?Customer
+    {
+        return $this->customer;
+    }
+
+    public function setCustomer(?Customer $customer): self
+    {
+        $this->customer = $customer;
+
+        return $this;
+    }
+
+  
+
+
+ 
+
+    
+
+  
 }

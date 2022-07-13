@@ -36,6 +36,7 @@ class CustomerController extends AbstractController
      * @OA\Get(
      *     path="/api/customer/{id}",
      *   summary="Recuperer un client par ID",
+     *   security={"bearer"},
      *   @OA\PathParameter(
      *     name="id",
      *     description="l'id du client que vous voulez recuperer"
@@ -51,7 +52,7 @@ class CustomerController extends AbstractController
      *   @OA\Response(response=404, description="Aucun client trouvé avec cet ID")
      * )
      * 
-     * 
+     * @OA\SecurityScheme(bearerFormat="JWT",type="apiKey",securityScheme="bearer")
      * 
      * @Route("/api/customer/{id}", name="Customer",methods={"GET"})
      * 
@@ -72,7 +73,7 @@ class CustomerController extends AbstractController
                 'message' => "Cet utilisateur n'existe pas"
             ], 404);
         }
-         if ($customer->getUsers() !== $this->getUser()) {
+         if ($customer->getUser() !== $this->getUser()) {
             return $this->json([
                 'status' => 403,
                 'message' => "Vous n'êtes pas autorisé à accèder à cette ressource."
@@ -96,7 +97,8 @@ class CustomerController extends AbstractController
 
     /**
      * @OA\Get(
-     *    path="/customers",
+     *    path="/api/customers",
+     *    security={"bearer"},
      *   summary="Liste des clients",
      *   @OA\Response(response=200, description="tous les clients"),
      *   @OA\Response(response=401, description="Erreur du token jwt"),
@@ -105,7 +107,7 @@ class CustomerController extends AbstractController
      * )
      * 
      * 
-     * @Route("/customers", name="Customers",methods={"GET"} )
+     * @Route("/api/customers", name="Customers",methods={"GET"} )
      */
     public function listCustomers(CustomerRepository $customerRepository): Response
     {

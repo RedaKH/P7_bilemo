@@ -3,12 +3,12 @@
 namespace App\Controller;
 
 use App\Entity\User;
-use App\Entity\Customer;
 use Hateoas\HateoasBuilder;
 use OpenApi\Annotations as OA;
 use App\Repository\UserRepository;
 use App\Repository\CustomerRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 use JMS\Serializer\SerializationContext;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -27,7 +27,8 @@ class UserController extends AbstractController
 {
     /**
      * @OA\Post(
-     *     path="/api/user",
+     *     path="/api/users",
+     *    security={"bearer"},
      *   summary="Créer un nouvel utilisateur",
      *   @OA\RequestBody(
      *     required=true,
@@ -74,12 +75,9 @@ class UserController extends AbstractController
      *     response=401,
      *     description="JWT erreur de token"
      *   ),
-     *  @OA\Response(
-     *     response=403,
-     *     description="Accès interdit"
-     *   )
+     *  
      * )
-     * @Route("/api/user", name="store_user",methods={"POST"})
+     * @Route("/api/users", name="store_user",methods={"POST"})
      */
     public function storeUser(Request $request, SerializerInterface $serializer, EntityManagerInterface $em, UserPasswordHasherInterface $userPasswordEncoder, ValidatorInterface $validator):Response
     {
@@ -120,8 +118,9 @@ class UserController extends AbstractController
      /**
       * @OA\Delete(
      *     path="/api/user/{id}/delete",
+     *    security={"bearer"},
      *   summary="Supprimer un utilisateur par ID",
-     *   @OA\Response(response=204, description="ok"),
+     *   @OA\Response(response=204, description="utilisateur supprimé"),
      *   @OA\Response(response=401, description="Erreur du token jwt"),
      *   @OA\Response(response=403, description="Vous n'êtes pas autorisé à accèder à cette ressource."),
      *   @OA\Response(response=404, description="Cet utilisateur n'existe pas"),
@@ -135,54 +134,55 @@ class UserController extends AbstractController
      *   )
      * )
      * 
-     * @Route("/api/user/{id}/delete", name="delete_user")
+     * @Route("/api/user/{id}/delete", name="delete_user",methods={"DELETE"})
      * 
      */
-    public function deleteUser(int $id,EntityManagerInterface $em,CustomerRepository $customerRepository,UserRepository $userRepository)
+    public function DeleteUser(int $id, CustomerRepository $customerRepository, UserRepository $userRepository, EntityManagerInterface $entityManager): JsonResponse
     {
         $customer = $customerRepository->find($this->getUser()->getId());
 
         $user = $userRepository->find($id);
-       
+
         if ($user === null) {
             return $this->json([
-                'status' => 404,
-                'message' => "Cet utilisateur n'existe pas"
-            ], 404);
-        }
-         if ($customer->getUsers() !== $this->getUser()) {
+                'status' => 400,
+                'message' => "User does not exist"
+            ], 400);
+        }   if ($user->getCustomer() !== $this->getUser()) {
             return $this->json([
                 'status' => 403,
-                'message' => "Vous n'êtes pas autorisé à accèder à cette ressource."
+                'message' => "Not authorized to delete this resource."
             ], 403);
+        }   else {
+            try {
+                $entityManager->remove($user);
+                $customer->removeUser($user);
+                $entityManager->flush();
+
+                return $this->json([
+                    'status' => 204,
+                    'message' => "User deleted."
+                ], 201);
+            } catch (Exception $exception) {
+                return $this->json([
+                    'status' => $exception->getCode(),
+                    'message' => $exception->getMessage()
+                ], $exception->getCode());
+            }
         }
-
-        try {
-           $em->remove($user);
-           $em->flush();
-           
-        } catch (NotEncodableValueException $e) {
-            return $this->json([
-                'status' => $e->getCode(),
-                'message' => $e->getMessage()
-            ], 400);
-        }
-       
-
-
-       
     }
 
     /**
      * @OA\Get(
-     *     path="/users",
+     *     path="/api/users",
+     *     security={"bearer"},
      *   summary="Liste des utilisateurs",
      *   @OA\Response(response=200, description="tous les utilisateurs"),
      *   @OA\Response(response=401, description="Erreur du token jwt"),
      *   @OA\Response(response=404, description="Aucun utilisateur trouvé")
      * )
      * 
-     * @Route("/users", name="Users",methods={"GET"} )
+     * @Route("/api/users", name="Users",methods={"GET"} )
      * 
      */
     public function listUser(UserRepository $userRepository): Response
@@ -198,6 +198,7 @@ class UserController extends AbstractController
     /**
      * @OA\Get(
      *     path="/api/user/{id}",
+     *     security={"bearer"},
      *   summary="Recuperer un utilisateur par ID",
      *   @OA\PathParameter(
      *     name="id",
