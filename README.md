@@ -12,8 +12,12 @@ Installation du projet :
    `composer install`
  4/Si vous n'avez pas créer de bases de données vous devez faire cette commande :   
    `php bin/console doctrine:database:create`
+   
+   
+   
   5/Ensuite effectuez cette commande pour créer vos tables en faisant cette commande pour la migration :
   `php bin/console doctrine:migrations:migrate `
+  
   
   6/Enfin mettez en place vos fixtures pour créer vos données en faisant ceci : 
   `php bin/console doctrine:fixtures:load`
