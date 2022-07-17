@@ -10,6 +10,9 @@ Installation du projet :
 
  3/Il faut installer composer en faisant ca :
    `composer install`
+   
+   
+   
  4/Si vous n'avez pas créer de bases de données vous devez faire cette commande :   
    `php bin/console doctrine:database:create`
    
